@@ -3,6 +3,7 @@ package com.example.lesson10task1.controller;
 import com.example.lesson10task1.entity.Hotel;
 import com.example.lesson10task1.entity.Room;
 import com.example.lesson10task1.payload.RoomDto;
+import com.example.lesson10task1.payload.RoomDto2;
 import com.example.lesson10task1.repository.HotelRepository;
 import com.example.lesson10task1.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,13 +49,14 @@ public class RoomController {
 
     @PostMapping
     public String addRoom(@RequestBody RoomDto roomDto){
-        if (!hotelRepository.existsById(roomDto.getHotelId())){
-            return "hotel not found";
+        if (!hotelRepository.existsById(roomDto.getHotelId()) || roomRepository.existsRoomByHotelId(roomDto.getHotelId())){
+            return "try again";
         }
         Room room = new Room();
         room.setFloor(roomDto.getFloor());
         room.setHotel(hotelRepository.findById(roomDto.getHotelId()).get());
         room.setNumber(roomDto.getNumber());
+        room.setSize(roomDto.getSize());
         roomRepository.save(room);
         return "saved";
     }
@@ -69,15 +71,13 @@ public class RoomController {
         return "not found";
     }
 
-    @PutMapping("/{id}")
-    public String updateRoom(@PathVariable Integer id, @RequestBody RoomDto roomDto){
-        if (!roomRepository.existsById(id) || hotelRepository.existsById(roomDto.getHotelId())){
+    @PutMapping("/byHotelId/{id}")
+    public String updateRoom(@PathVariable Integer id, @RequestBody RoomDto2 roomDto){
+        if (!roomRepository.existsById(id)){
             return "not found";
         }
-        Room room = new Room();
-        room.setFloor(roomDto.getFloor());
-        room.setHotel(hotelRepository.findById(roomDto.getHotelId()).get());
-        room.setNumber(roomDto.getNumber());
+        Room room = roomRepository.findRoomsByHotelId(roomDto.getHotelId());
+        room.setSize(roomDto.getSize());
         roomRepository.save(room);
         return "updated";
     }

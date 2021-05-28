@@ -9,4 +9,6 @@ import java.util.List;
 
 public interface RoomRepository extends JpaRepository<Room, Integer> {
     Page<Room> findRoomsByHotelId(Integer id, Pageable pageable);
+    Room findRoomsByHotelId(Integer hotel_id);
+    boolean existsRoomByHotelId(Integer hotel_id);
 }
